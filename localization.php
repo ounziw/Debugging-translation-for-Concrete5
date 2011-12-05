@@ -79,10 +79,13 @@
 	}
 
 	function t($text) {
+		// prevents warnings when texts are used as an arg of some functions like printf.
+		$removed = array('$','%');
+		$no_var_text = str_replace($removed,'_',$text);
 		$zt = Localization::getTranslate();
 		if (func_num_args() == 1) {
 			if (is_object($zt)) {
-				return $zt->_($text);
+				return $no_var_text . $zt->_($text);
 			} else {
 				return $text;
 			}
@@ -93,7 +96,7 @@
 	        $arg[] = func_get_arg($i); 
 	    }
 		if (is_object($zt)) {
-			return vsprintf($zt->_($text), $arg);
+			return vsprintf($no_var_text . $zt->_($text), $arg);
 		} else {
 			return vsprintf($text, $arg);
 		}

@@ -1,0 +1,10 @@
+* About
+This library file shows both the source and the target of phrases which should be translated. 
+You can check the translations on your screen.
+
+* Usage
+Copy localization.php to libraries.
+
+*** Warning ***
+DEBUGGING ONLY.
+DO NOT ACTIVATE on a live site.
