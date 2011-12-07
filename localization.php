@@ -82,6 +82,7 @@
 		// prevents warnings when texts are used as an arg of some functions like printf.
 		$removed = array('$','%');
 		$no_var_text = str_replace($removed,'_',$text);
+		$no_var_text .= '&nbsp;'; // Space for Readability
 		$zt = Localization::getTranslate();
 		if (func_num_args() == 1) {
 			if (is_object($zt)) {
