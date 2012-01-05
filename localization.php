@@ -1,4 +1,4 @@
-<?
+<?php 
 	
 	class Localization {
 	
@@ -14,22 +14,43 @@
 			}
 			return $loc;
 		}
+		
+		public static function changeLocale($locale) {
+			$loc = self::getInstance();
+			$loc->setLocale($locale);
+		}
+		
+		public static function activeLocale() {
+			$loc = self::getInstance();
+			return $loc->getLocale();
+		}
 
 		protected $translate;
 
 		public function __construct() {
-			if (defined('ACTIVE_LOCALE') && ACTIVE_LOCALE != 'en_US') {
-				Loader::library('3rdparty/Zend/Translate');
-				$cache = Cache::getLibrary();
-				if (is_object($cache)) {
-					Zend_Translate::setCache($cache);
-				}
-				if (ACTIVE_LOCALE != 'en_US') {
-					if (is_dir(DIR_BASE . '/languages/' . ACTIVE_LOCALE)) {
-						$this->translate = new Zend_Translate('gettext', DIR_BASE . '/languages/' . ACTIVE_LOCALE, ACTIVE_LOCALE);
+			Loader::library('3rdparty/Zend/Translate');
+			$this->setLocale(defined('ACTIVE_LOCALE') ? ACTIVE_LOCALE : 'en_US');
+			$cache = Cache::getLibrary();
+			if (is_object($cache)) {
+				Zend_Translate::setCache($cache);
+			}
+		}
+		
+		public function setLocale($locale) {
+			if ($locale != 'en_US' && is_dir(DIR_BASE . '/languages/' . $locale)) {
+				if (!isset($this->translate)) {
+					$this->translate = new Zend_Translate('gettext', DIR_BASE . '/languages/' . $locale, $locale);
+				} else {
+					if (!in_array($locale, $this->translate->getList())) {
+						$this->translate->addTranslation(DIR_BASE . '/languages/' . $locale, $locale);
 					}
+					$this->translate->setLocale($locale);
 				}
 			}
+		}
+		
+		public function getLocale() {
+			return isset($this->translate) ? $this->translate->getLocale() : 'en_US';
 		}
 
 		public function getActiveTranslateObject() {
@@ -59,27 +80,29 @@
 			$fh = Loader::helper('file');
 			
 			if (file_exists(DIR_LANGUAGES)) {
-				$languages = array_merge($languages, $fh->getDirectoryContents(DIR_LANGUAGES));
+				$contents = $fh->getDirectoryContents(DIR_LANGUAGES);
+				foreach($contents as $con) {
+					if (is_dir(DIR_LANGUAGES . '/' . $con) && file_exists(DIR_LANGUAGES . '/' . $con . '/LC_MESSAGES/messages.mo')) {
+						$languages[] = $con;					
+					}
+				}
 			}
 			if (file_exists(DIR_LANGUAGES_CORE)) {
-				$languages = array_merge($languages, $fh->getDirectoryContents(DIR_LANGUAGES_CORE));
-			}
-			
-			$langtmp = array();
-			foreach($languages as $lang) {
-				if ($lang != DIRNAME_LANGUAGES_SITE_INTERFACE) {
-					$langtmp[] = $lang;
+				$contents = $fh->getDirectoryContents(DIR_LANGUAGES_CORE);
+				foreach($contents as $con) {
+					if (is_dir(DIR_LANGUAGES_CORE . '/' . $con) && file_exists(DIR_LANGUAGES_CORE . '/' . $con . '/LC_MESSAGES/messages.mo') && (!in_array($con, $languages))) {
+						$languages[] = $con;					
+					}
 				}
 			}
 			
-			return $langtmp;
+			return $languages;
 		}
 	
 
 	}
 
 	function t($text) {
-		// prevents warnings when texts are used as an arg of some functions like printf.
 		$removed = array('$','%');
 		$no_var_text = str_replace($removed,'_',$text);
 		$no_var_text .= '&nbsp;'; // Space for Readability
@@ -102,4 +125,3 @@
 			return vsprintf($text, $arg);
 		}
 	}
-
