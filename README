@@ -3,7 +3,11 @@ This library file shows both the source and the target of phrases which should b
 You can check the translations on your screen.
 
 * Usage
-Copy localization.php to libraries.
+** ver 5.6
+Copy 5.6/localization.php to concrete/startup/localization.php
+
+** ver 5.5
+Copy 5.5/localization.php to libraries/localization.php
 
 *** Warning ***
 DEBUGGING ONLY.
