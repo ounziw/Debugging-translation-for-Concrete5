@@ -45,7 +45,7 @@ function t2($singular, $plural, $number) {
 	$no_var_text_plural = remove_percent_from_text($plural);
 	$zt = Localization::getTranslate();
 	if(is_object($zt)) {
-		$translated = $no_var_text . $zt->plural($no_var_text_singular . $singular, $no_var_text_plural . $plural, $number);
+		$translated = $zt->plural($no_var_text_singular . $singular, $no_var_text_plural . $plural, $number);
 	} else {
 		$translated = ($number == 1) ? $no_var_text_singular . $singular : $no_var_text_plural . $plural;
 	}
