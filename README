@@ -12,3 +12,6 @@ Copy 5.5/localization.php to libraries/localization.php
 *** Warning ***
 DEBUGGING ONLY.
 DO NOT ACTIVATE on a live site.
+
+* LICENSE *
+MIT
